@@ -11,12 +11,12 @@
 
 [ANDROID NDK](https://dl.google.com/android/repository/android-ndk-r26c-linux.zip)
 
-## Install Yolov5 repo
+## Install YOLOv5 Repo
 ```
 git clone https://github.com/ultralytics/yolov5.git
 ```
 
-## Replace the file in yolov5 repo
+## Replace Files in YOLOv5 Repo
 ```
 yolov5
 L---> export.py
@@ -24,7 +24,7 @@ L---> models
   L---> yolo.py
 ```
 
-## Navigate to yolov5 folder and convert the model
+## Navigate to YOLOv5 Folder and Convert the Model
 ```
 python3 export.py --weights yolov5.pt --optimize --opset 11 --simplify --include onnx
 ```
