@@ -8,6 +8,7 @@
 
 ## SNPE SDK Installation
 [SNPE SDK](https://www.qualcomm.com/developer/software/neural-processing-sdk-for-ai)
+
 [ANDROID NDK](https://dl.google.com/android/repository/android-ndk-r26c-linux.zip)
 
 ## Install Yolov5 repo
