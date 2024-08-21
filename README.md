@@ -1,7 +1,6 @@
 # SNPE_Yolov5_Model_Conversion
 
 ## Prerequisites
-* Hardware Platform: QCS6490
 * OS: Ubuntu 22.04
 * SNPE SDK: v2.22.6.240515
 * Model: YOLOv5s.pt
@@ -16,17 +15,18 @@
 git clone https://github.com/ultralytics/yolov5.git
 ```
 
-## Replace Files in YOLOv5 Repo
+## Environment Setup
 ```
-yolov5
-L---> export.py
-L---> models
-  L---> yolo.py
+conda create -n yolov5 python=3.10
+conda activate yolov5
+cd yolov5
+pip install -r requirements.txt
 ```
 
-## Navigate to YOLOv5 Folder and Convert the Model
+## Convert to ONNX Model
 ```
-python3 export.py --weights yolov5.pt --optimize --opset 11 --simplify --include onnx
+cd yolov5
+python export.py --weights yolov5s.pt --include torchscript onnx
 ```
 
 ## Setup SNPE Environment and Convert ONNX Model to DLC
@@ -83,31 +83,10 @@ snpe-dlc-info -i dlc/yolov5s_quantized.dlc
 
 ## Model Analysis
 ```
-| 197 | /model.24/Sigmoid               | ElementWiseNeuron | onnx::Sigmoid_329 (data type: Float_32; tensor dimension: [1,80,80,21]; tensor type: APP_READ)                       | output0 (data type: Float_32; tensor dimension: [1,80,80,21]; tensor type: APP_READ)                                 | 1x80x80x21   | A D G C  | operation: 6                             |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | packageName: qti.aisw                    |
-| 198 | /model.24/m.1/Conv              | Conv2d            | /model.20/cv3/act/Mul_output_0 (data type: Float_32; tensor dimension: [1,40,40,256]; tensor type: NATIVE)           | onnx::Sigmoid_331 (data type: Float_32; tensor dimension: [1,40,40,21]; tensor type: APP_READ)                       | 1x40x40x21   | A D G C  | bias_op_name: model.24.m.1.bias          |
-|     |                                 |                   | model.24.m.1.weight (data type: Float_32; tensor dimension: [1,1,256,21]; tensor type: STATIC)                       |                                                                                                                      |              |          | dilation: [1, 1]                         |
-|     |                                 |                   | model.24.m.1.bias (data type: Float_32; tensor dimension: [21]; tensor type: STATIC)                                 |                                                                                                                      |              |          | group: 1                                 |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | packageName: qti.aisw                    |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | pad_amount: [[0, 0], [0, 0]]             |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | padding_size_strategy: 5                 |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | stride: [1, 1]                           |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | param count: 5k (0.0769%)                |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | MACs per inference: 8M (0.109%)          |
-| 199 | /model.24/Sigmoid_1             | ElementWiseNeuron | onnx::Sigmoid_331 (data type: Float_32; tensor dimension: [1,40,40,21]; tensor type: APP_READ)                       | 332 (data type: Float_32; tensor dimension: [1,40,40,21]; tensor type: APP_READ)                                     | 1x40x40x21   | A D G C  | operation: 6                             |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | packageName: qti.aisw                    |
-| 200 | /model.24/m.2/Conv              | Conv2d            | /model.23/cv3/act/Mul_output_0 (data type: Float_32; tensor dimension: [1,20,20,512]; tensor type: NATIVE)           | onnx::Sigmoid_333 (data type: Float_32; tensor dimension: [1,20,20,21]; tensor type: APP_READ)                       | 1x20x20x21   | A D G C  | bias_op_name: model.24.m.2.bias          |
-|     |                                 |                   | model.24.m.2.weight (data type: Float_32; tensor dimension: [1,1,512,21]; tensor type: STATIC)                       |                                                                                                                      |              |          | dilation: [1, 1]                         |
-|     |                                 |                   | model.24.m.2.bias (data type: Float_32; tensor dimension: [21]; tensor type: STATIC)                                 |                                                                                                                      |              |          | group: 1                                 |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | packageName: qti.aisw                    |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | pad_amount: [[0, 0], [0, 0]]             |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | padding_size_strategy: 5                 |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | stride: [1, 1]                           |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | param count: 10k (0.154%)                |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | MACs per inference: 4M (0.0546%)         |
-| 201 | /model.24/Sigmoid_2             | ElementWiseNeuron | onnx::Sigmoid_333 (data type: Float_32; tensor dimension: [1,20,20,21]; tensor type: APP_READ)                       | 334 (data type: Float_32; tensor dimension: [1,20,20,21]; tensor type: APP_READ)                                     | 1x20x20x21   | A D G C  | operation: 6                             |
-|     |                                 |                   |                                                                                                                      |                                                                                                                      |              |          | packageName: qti.aisw                    |
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| 238 | /model.24/Concat_3               | Concat            | /model.24/Reshape_1_output_0 (data type: Float_32; tensor dimension: [1,19200,85]; tensor type: NATIVE)              | output0 (data type: Float_32; tensor dimension: [1,25200,85]; tensor type: APP_READ)                                 | 1x25200x85   | A D G C  | axis: 1                                  |
+|     |                                  |                   | /model.24/Reshape_3_output_0 (data type: Float_32; tensor dimension: [1,4800,85]; tensor type: NATIVE)               |                                                                                                                      |              |          | packageName: qti.aisw                    |
+|     |                                  |                   | /model.24/Reshape_5_output_0 (data type: Float_32; tensor dimension: [1,1200,85]; tensor type: NATIVE)               |                                                                                                                      |              |          |                                          |
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 Note: The supported runtimes column assumes a processor target of Snapdragon 855
 Key : A:AIP
       D:DSP
@@ -119,26 +98,17 @@ Key : A:AIP
 ------------------------------------------------------------------------------
 | images      | 1,640,640,3  | Float_32  | No encoding info for this tensor  |
 ------------------------------------------------------------------------------
-------------------------------------------------------------------------------------
-| Output Name        | Dimensions  | Type      | Encoding Info                     |
-------------------------------------------------------------------------------------
-| onnx::Sigmoid_331  | 1,40,40,21  | Float_32  | No encoding info for this tensor  |
-| 332                | 1,40,40,21  | Float_32  | No encoding info for this tensor  |
-| 334                | 1,20,20,21  | Float_32  | No encoding info for this tensor  |
-| onnx::Sigmoid_333  | 1,20,20,21  | Float_32  | No encoding info for this tensor  |
-| onnx::Sigmoid_329  | 1,80,80,21  | Float_32  | No encoding info for this tensor  |
-| output0            | 1,80,80,21  | Float_32  | No encoding info for this tensor  |
-------------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+| Output Name  | Dimensions  | Type      | Encoding Info                     |
+------------------------------------------------------------------------------
+| output0      | 1,25200,85  | Float_32  | No encoding info for this tensor  |
+------------------------------------------------------------------------------
 ```
 Output Layers:
 ```
-    /model.24/Sigmoid
-    /model.24/Sigmoid_1
-    /model.24/Sigmoid_2
+    /model.24/Concat_3
 ``` 
 Output Tensors:
 ```
     output0
-    332
-    334
 ```
