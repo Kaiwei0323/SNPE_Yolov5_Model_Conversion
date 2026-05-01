@@ -156,3 +156,4 @@ Output Tensors:
 
 ### Reference
 * https://docs.qualcomm.com/bundle/publicresource/topics/80-63442-2/model_conv_onnx.html
+* https://docs.qualcomm.com/doc/80-63442-10/topic/setup_linux.html
